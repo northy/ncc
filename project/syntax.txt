@@ -1,0 +1,19 @@
+<block>::= <attribute> | <expression> | <declaration> | <if> | <while>
+
+<operand>::= ID | number;
+<mul-exp>::= <operand> * <operand>
+<add-exp>::= <operand> + <operand>
+<sub-exp>::= <operand> - <operand>
+<div-exp>::= <operand> / <operand>
+<not-exp>::= !<operand>
+<expression>::= <operand> | <mul-exp> | <add-exp> | <sub-exp> | <div-exp> | <not-exp> | (<expression>)
+
+<assignment>::= = <expression>;
+<attribute>::= ID <assignment>;
+
+<type>::= int
+<declaration>::= <type> ID | <type> ID <assignment>;
+
+<while>::= while (<expression>) {<block>}
+<if>::= if (<expression>) {<block>} else <else> | if (<expression>) {<block>}
+<else>::= <if> | {<block>}
