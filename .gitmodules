@@ -1,0 +1,3 @@
+[submodule "dfa-generator"]
+	path = dfa-generator
+	url = git@github.com:northy/dfa-generator.git
