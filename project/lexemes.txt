@@ -2,7 +2,8 @@ int
 while
 if
 else
-jump
+goto
+:
 (
 )
 ;

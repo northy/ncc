@@ -1,4 +1,4 @@
-<block>::= <attribute> | <expression> | <declaration> | <if> | <while>
+<block>::= <attribute> | <expression> | <declaration> | <if> | <while> | <jumppoint> | <goto>
 
 <operand>::= ID | number;
 <mul-exp>::= <operand> * <operand>
@@ -8,12 +8,15 @@
 <not-exp>::= !<operand>
 <expression>::= <operand> | <mul-exp> | <add-exp> | <sub-exp> | <div-exp> | <not-exp> | (<expression>)
 
-<assignment>::= = <expression>;
-<attribute>::= ID <assignment>;
+<assignment>::= = <expression> ;
+<attribute>::= ID <assignment> ;
 
 <type>::= int
 <declaration>::= <type> ID | <type> ID <assignment>;
 
-<while>::= while (<expression>) {<block>}
-<if>::= if (<expression>) {<block>} else <else> | if (<expression>) {<block>}
-<else>::= <if> | {<block>}
+<while>::= while ( <expression> ) { <block> }
+<if>::= if ( <expression> ) { <block> } else <else> | if ( <expression> ) { <block> }
+<else>::= <if> | { <block> }
+
+<jumppoint>::= ID :
+<goto>::= goto ID ;
