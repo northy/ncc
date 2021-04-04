@@ -1,17 +1,25 @@
-<block>::= <attribute> | <expression> | <declaration> | <if> | <while> | <jumppoint> | <goto>
+<block>::= <operation> <block> | <operation>
 
-<operand>::= ID | number;
-<mul-exp>::= <operand> * <operand>
-<add-exp>::= <operand> + <operand>
-<sub-exp>::= <operand> - <operand>
-<div-exp>::= <operand> / <operand>
-<not-exp>::= !<operand>
-<expression>::= <operand> | <mul-exp> | <add-exp> | <sub-exp> | <div-exp> | <not-exp> | (<expression>)
+<operation>::= <attribute> | <declaration> | <if> | <while> | <jumppoint> | <goto>
+
+<operand>::= ID | number | ' letter '
+<mul-exp>::= <expression> * <expression>
+<add-exp>::= <expression> + <expression>
+<sub-exp>::= <expression> - <expression>
+<div-exp>::= <expression> / <expression>
+<not-exp>::= ! <expression>
+<eq-exp>::= <expression> == <expression>
+<neq-exp>::= <expression != <expression>
+<leq-exp>::= <expression <= <expression>
+<geq-exp>::= <expression >= <expression>
+<lt-exp>::= <expression < <expression>
+<gt-exp>::= <expression > <expression>
+<expression>::= <operand> | <mul-exp> | <add-exp> | <sub-exp> | <div-exp> | <not-exp> | <eq-exp> | <neq-exp> | <leq-exp> | <geq-exp> | <lt-exp> | <gt-exp> | (<expression>)
 
 <assignment>::= = <expression> ;
 <attribute>::= ID <assignment> ;
 
-<type>::= int
+<type>::= int | char
 <declaration>::= <type> ID | <type> ID <assignment>;
 
 <while>::= while ( <expression> ) { <block> }
