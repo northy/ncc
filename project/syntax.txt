@@ -20,7 +20,7 @@
 
 <while>::= while ( <expression> ) { <block> }
 <if>::= if ( <expression> ) { <block> } <if'>
-<if>'::= else <else> | epsilon
+<if'>::= else <else> | epsilon
 <else>::= <if> | { <block> }
 
 <jumppoint>::= ID :
