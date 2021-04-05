@@ -3,27 +3,24 @@
 <operation>::= <attribute> | <declaration> | <if> | <while> | <jumppoint> | <goto>
 
 <operand>::= ID | number | ' letter '
-<mul-exp>::= <expression> * <expression>
-<add-exp>::= <expression> + <expression>
-<sub-exp>::= <expression> - <expression>
-<div-exp>::= <expression> / <expression>
-<not-exp>::= ! <expression>
-<eq-exp>::= <expression> == <expression>
-<neq-exp>::= <expression != <expression>
-<leq-exp>::= <expression <= <expression>
-<geq-exp>::= <expression >= <expression>
-<lt-exp>::= <expression < <expression>
-<gt-exp>::= <expression > <expression>
-<expression>::= <operand> | <mul-exp> | <add-exp> | <sub-exp> | <div-exp> | <not-exp> | <eq-exp> | <neq-exp> | <leq-exp> | <geq-exp> | <lt-exp> | <gt-exp> | (<expression>)
+<arithmetic-op>::= * | + | - | /
+<boolean-op>::= !
+<comparison-op>::= == | != | <= | >= | < | >
+<arithmetic-exp>::= <expression> <arithmetic-op> <expression>
+<boolean-exp>::= <expression> <boolean-op> <expression>
+<comparison-exp>::= <expression> <comparison-op> <expression>
+<expression>::= <operand> | <arithmetic-exp> | <boolean-exp> | <comparison-exp> | ( <expression> )
 
 <assignment>::= = <expression> ;
 <attribute>::= ID <assignment> ;
 
 <type>::= int | char
-<declaration>::= <type> ID | <type> ID <assignment>;
+<declaration>::= <type> ID <declaration'>
+<declaration'>::= <assignment> | epsilon;
 
 <while>::= while ( <expression> ) { <block> }
-<if>::= if ( <expression> ) { <block> } else <else> | if ( <expression> ) { <block> }
+<if>::= if ( <expression> ) { <block> } <if'>
+<if>'::= else <else> | epsilon
 <else>::= <if> | { <block> }
 
 <jumppoint>::= ID :
