@@ -1,0 +1,28 @@
+"Start Symbol" = <block>
+
+<block>::= <operation> <block> | <operation>
+
+<operation>::= <attribute> | <declaration> | <if> | <while> | <jumppoint> | <goto>
+
+<operand>::= 'ID' | 'number' | '-' 'number' | 'letter'
+<arithmetic-op>::= '*' | '+' | '-' | '/'
+<boolean-op>::= '!'
+<comparison-op>::= '==' | '!=' | '<=' | '>=' | '<' | '>'
+<arithmetic-exp>::= <expression> <arithmetic-op> <expression>
+<boolean-exp>::= <expression> <boolean-op> <expression>
+<comparison-exp>::= <expression> <comparison-op> <expression>
+<expression>::= <operand> | <arithmetic-exp> | <boolean-exp> | <comparison-exp> | '(' <expression> ')'
+
+<assignment>::= '=' <expression> ';'
+<attribute>::= 'ID' <assignment>
+
+<type>::= 'int' | 'char'
+<declaration>::= <type> 'ID' <declaration1>
+<declaration1>::= <assignment> | ';'
+
+<while>::= 'while' '(' <expression> ')' '{' <block> '}'
+<if>::= 'if' '(' <expression> ')' '{' <block> '}' | 'if' '(' <expression> ')' '{' <block> '}' 'else' <else>
+<else>::= <if> | '{' <block> '}'
+
+<jumppoint>::= 'ID' ':'
+<goto>::= 'goto' 'ID' ';'
