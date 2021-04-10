@@ -106,6 +106,8 @@ def read(table, final, initial, file, debugMode) :
         i_c=c_c+1
         c_c+=1
     
+    write_tape(tape, len(lines), 0, '$', '$')
+    
     tape.close()
     return success
 
@@ -115,7 +117,7 @@ def lexic_error(l, line, column) :
     print(" "*column+'^')
 
 def write_tape(tape, line, col, token, value) :
-    tape.write(str(line)+' '+str(col)+' '+str(token)+' '+str(value)+'\n')
+    tape.write(str(token)+' '+str(line)+' '+str(col)+' '+str(value)+'\n')
 
 def lexic(dfa, input, debugMode=False) :
     table, final, initial = construct(dfa, debugMode)
