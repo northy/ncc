@@ -1,6 +1,7 @@
 import sys
 from sys import exit
 from collections import deque
+import linecache
 
 def read_grammar(file) :
     productions = []
@@ -45,7 +46,7 @@ def read_grammar(file) :
 
     return productions, production_sizes, actions, transitions
 
-def syntactical(tape, productions, production_sizes, actions, transitions) :
+def syntactical(tape, productions, production_sizes, actions, transitions, debug) :
     try :
         tape_f = open(tape, "r")
 
@@ -55,38 +56,46 @@ def syntactical(tape, productions, production_sizes, actions, transitions) :
         while (line:=tape_f.readline().split()) :
             c_state = stack.pop(); stack.append(c_state)
             if c_state not in actions or line[0] not in actions[c_state] :
-                if c_state in actions:
-                    print("Syntax error:", c_state, "doesn't have an action from", line[0])
-                else :
-                    print("Syntax error:", c_state, "has no actions")
-                return False
-            act = actions[c_state][line[0]]
-            while act[0]=='r' :
-                print("Reducing", production_sizes[act[1]], "elements of production", act[1], "from", line[0])
-                for i in range(production_sizes[act[1]]) : stack.pop() #reduce
-                c_state = stack.pop(); stack.append(c_state)
-                print("Transitioning from", c_state, "with", productions[act[1]])
-                if c_state not in transitions or productions[act[1]] not in transitions[c_state] :
-                    if c_state in transitions:
-                        print("Syntax error:", c_state, "doesn't transition from", productions[act[1]])
-                    else :
-                        print("Syntax error:", c_state, "has no transitions")
-                    return False
-                stack.append(transitions[c_state][productions[act[1]]])
-                c_state = stack.pop(); stack.append(c_state)
-                if c_state not in actions or line[0] not in actions[c_state] :
+                if debug :
                     if c_state in actions:
                         print("Syntax error:", c_state, "doesn't have an action from", line[0])
                     else :
                         print("Syntax error:", c_state, "has no actions")
+                syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+                return False
+            act = actions[c_state][line[0]]
+            while act[0]=='r' :
+                if debug : print("Reducing", production_sizes[act[1]], "elements of production", act[1], "from", line[0])
+                for i in range(production_sizes[act[1]]) : stack.pop() #reduce
+                c_state = stack.pop(); stack.append(c_state)
+                if debug : print("Transitioning from", c_state, "with", productions[act[1]])
+                if c_state not in transitions or productions[act[1]] not in transitions[c_state] :
+                    if debug :
+                        if c_state in transitions:
+                            print("Syntax error:", c_state, "doesn't transition from", productions[act[1]])
+                        else :
+                            print("Syntax error:", c_state, "has no transitions")
+                    syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+                    return False
+                stack.append(transitions[c_state][productions[act[1]]])
+                c_state = stack.pop(); stack.append(c_state)
+                if c_state not in actions or line[0] not in actions[c_state] :
+                    if debug :
+                        if c_state in actions:
+                            print("Syntax error:", c_state, "doesn't have an action from", line[0])
+                        else :
+                            print("Syntax error:", c_state, "has no actions")
+                    syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
                     return False
                 act = actions[c_state][line[0]]
                 continue
             if act[0]=='a' :
                 return True #accept
-            print("Shifting",act[1],"from",line[0])
+            if debug : print("Shifting",act[1],"from",line[0])
             stack.append(act[1]) #shift
 
+        if debug : print("Syntax error:", line[0], "isn't final!")
+        syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
         return False
 
         tape_f.close()
@@ -95,7 +104,13 @@ def syntactical(tape, productions, production_sizes, actions, transitions) :
         print(e)
         exit(1)
 
+def syntactical_error(file, l, c) :
+    line = linecache.getline(file, l+1).strip()
+    print("Syntactical error at line %d:"%(l+1))
+    print(line)
+    print(" "*c+'^')
+
 if __name__=="__main__" :
     productions, production_sizes, actions, transitions = read_grammar(sys.argv[1])
-    if syntactical("out.lex", productions, production_sizes, actions, transitions) :
+    if syntactical("out.lex", productions, production_sizes, actions, transitions, True) :
         print("Recognized!")
