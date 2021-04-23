@@ -5,13 +5,15 @@
 <operation>::= <attribute> | <declaration> | <if> | <while> | <jumppoint> | <goto>
 
 <operand>::= 'ID' | 'number' | '-' 'number' | 'letter'
-<arithmetic-op>::= '*' | '+' | '-' | '/'
-<boolean-op>::= '!'
-<comparison-op>::= '==' | '!=' | '<=' | '>=' | '<' | '>'
-<arithmetic-exp>::= <expression> <arithmetic-op> <expression>
-<boolean-exp>::= <expression> <boolean-op> <expression>
-<comparison-exp>::= <expression> <comparison-op> <expression>
-<expression>::= <operand> | <arithmetic-exp> | <boolean-exp> | <comparison-exp> | '(' <expression> ')'
+<cmpexp>::= <boolexp> <cmpexp1> | <boolexp>
+<cmpexp1>::= '==' <boolexp> | '!=' <boolexp> | '<=' <boolexp> | '>=' <boolexp> | '<' <boolexp> | '>' <boolexp>
+<boolexp>::= '!' <addexp> | <addexp>
+<addexp>::= <addexp> <addexp1> | <mulexp>
+<addexp1>::= '+' <mulexp> | '-' <mulexp>
+<mulexp>::= <mulexp> <mulexp1> | <termexp>
+<mulexp1>::= '*' <termexp> | '/' <termexp>
+<termexp>::= <operand> | '(' <expression> ')'
+<expression>::= <cmpexp>
 
 <assignment>::= '=' <expression> ';'
 <attribute>::= 'ID' <assignment>
