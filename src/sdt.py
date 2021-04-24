@@ -1,34 +1,216 @@
+def __operand_ID(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = "memory"
+    obj["operandowner"] = sdt_stack[0]["lexval"]
+    obj["operand"] = semantical_global["ids"][sdt_stack[0]["lexval"]].memshift
+    return obj
+
 def __operand_number(semantical_global, sdt_stack, symbol_table) :
     obj = {}
-    obj["value"] = int(sdt_stack[0]["lexval"])
+    obj["operandtype"] = "numeric"
+    obj["operandowner"] = None
+    obj["operand"] = int(sdt_stack[0]["lexval"])
+    return obj
+
+def __operand_minus_number(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = "numeric"
+    obj["operandowner"] = None
+    obj["operand"] = -int(sdt_stack[0]["lexval"])
+    return obj
+
+def __cmpexp_boolexp(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = sdt_stack[0]["operandtype"]
+    obj["operandowner"] = sdt_stack[0]["operandowner"]
+    obj["operand"] = sdt_stack[0]["operand"]
+    return obj
+
+def __boolexp_addexp(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = sdt_stack[0]["operandtype"]
+    obj["operandowner"] = sdt_stack[0]["operandowner"]
+    obj["operand"] = sdt_stack[0]["operand"]
+    return obj
+
+def __addexp_addexp1_addexpd(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    symbol_table.write("O " + sdt_stack[1]["type"] + ' ')
+
+    if sdt_stack[0]["operandtype"]=="memory" :
+        symbol_table.write(sdt_stack[0]["operandowner"] + ' ')
+    if sdt_stack[0]["operandtype"]=="numeric" :
+        symbol_table.write(str(sdt_stack[0]["operand"]) + ' ')
+    if sdt_stack[0]["operandtype"]=="register" :
+        symbol_table.write("CUR ")
+    
+    if sdt_stack[1]["operandtype"]=="memory" :
+        symbol_table.write(sdt_stack[1]["operandowner"] + '\n')
+    if sdt_stack[1]["operandtype"]=="numeric" :
+        symbol_table.write(str(sdt_stack[1]["operand"]) + '\n')
+    if sdt_stack[1]["operandtype"]=="register" :
+        symbol_table.write("CUR\n")
+    
+    obj["operandtype"] = "register"
+    obj["operandowner"] = None
+    obj["operand"] = None
+    return obj
+
+def __addexp_mulexp(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = sdt_stack[0]["operandtype"]
+    obj["operandowner"] = sdt_stack[0]["operandowner"]
+    obj["operand"] = sdt_stack[0]["operand"]
+    return obj
+
+def __addexpd_plus_mulexp(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["type"] = "+"
+    obj["operandtype"] = sdt_stack[1]["operandtype"]
+    obj["operandowner"] = sdt_stack[1]["operandowner"]
+    obj["operand"] = sdt_stack[1]["operand"]
+    return obj
+
+def __addexpd_minus_mulexp(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["type"] = "-"
+    obj["operandtype"] = sdt_stack[1]["operandtype"]
+    obj["operandowner"] = sdt_stack[1]["operandowner"]
+    obj["operand"] = sdt_stack[1]["operand"]
     return obj
 
 def __mulexp_mulexp1_mulexpd(semantical_global, sdt_stack, symbol_table) :
     obj = {}
-    if sdt_stack[1]["type"] == "*" :
-        obj["value"] = sdt_stack[0]["value"] * sdt_stack[1]["value"]
+    symbol_table.write("O " + sdt_stack[1]["type"] + ' ')
+
+    if sdt_stack[0]["operandtype"]=="memory" :
+        symbol_table.write(sdt_stack[0]["operandowner"] + ' ')
+    if sdt_stack[0]["operandtype"]=="numeric" :
+        symbol_table.write(str(sdt_stack[0]["operand"]) + ' ')
+    if sdt_stack[0]["operandtype"]=="register" :
+        symbol_table.write("CUR ")
+    
+    if sdt_stack[1]["operandtype"]=="memory" :
+        symbol_table.write(sdt_stack[1]["operandowner"] + '\n')
+    if sdt_stack[1]["operandtype"]=="numeric" :
+        symbol_table.write(str(sdt_stack[1]["operand"]) + '\n')
+    if sdt_stack[1]["operandtype"]=="register" :
+        symbol_table.write("CUR\n")
+    
+    obj["operandtype"] = "register"
+    obj["operandowner"] = None
+    obj["operand"] = None
     return obj
 
 def __mulexp_termexp(semantical_global, sdt_stack, symbol_table) :
     obj = {}
-    obj["value"] = sdt_stack[0]["value"]
+    obj["operandtype"] = sdt_stack[0]["operandtype"]
+    obj["operandowner"] = sdt_stack[0]["operandowner"]
+    obj["operand"] = sdt_stack[0]["operand"]
     return obj
 
 def __mulexpd_mult_termexp(semantical_global, sdt_stack, symbol_table) :
     obj = {}
     obj["type"] = "*"
-    obj["value"] = sdt_stack[1]["value"]
+    obj["operandtype"] = sdt_stack[1]["operandtype"]
+    obj["operandowner"] = sdt_stack[1]["operandowner"]
+    obj["operand"] = sdt_stack[1]["operand"]
+    return obj
+
+def __mulexpd_div_termexp(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["type"] = "/"
+    obj["operandtype"] = sdt_stack[1]["operandtype"]
+    obj["operandowner"] = sdt_stack[1]["operandowner"]
+    obj["operand"] = sdt_stack[1]["operand"]
     return obj
 
 def __termexp_operand(semantical_global, sdt_stack, symbol_table) :
     obj = {}
-    obj["value"] = sdt_stack[0]["value"]
+    obj["operandtype"] = sdt_stack[0]["operandtype"]
+    obj["operandowner"] = sdt_stack[0]["operandowner"]
+    obj["operand"] = sdt_stack[0]["operand"]
     return obj
 
+def __termexp_p_expression_p(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = sdt_stack[1]["operandtype"]
+    obj["operandowner"] = sdt_stack[1]["operandowner"]
+    obj["operand"] = sdt_stack[1]["operand"]
+    return obj
+
+def __expression_cmpex(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    if (sdt_stack[0]["operandtype"]!="register") : #perform an operation to get the operand on a register
+        if sdt_stack[0]["operandtype"]=="memory" :
+            symbol_table.write("O + " + sdt_stack[0]["operandowner"] + " 0\n")
+        if sdt_stack[0]["operandtype"]=="numeric" :
+            symbol_table.write("O + " + str(sdt_stack[0]["operand"]) + " 0\n")
+    
+    obj["operandtype"] = "register"
+    obj["operandowner"] = None
+    obj["operand"] = None
+    return obj
+
+def __assignment_assign_expression_semicolon(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["operandtype"] = sdt_stack[1]["operandtype"]
+    obj["operandowner"] = sdt_stack[1]["operandowner"]
+    obj["operand"] = sdt_stack[1]["operand"]
+    return obj
+
+def __attribute_ID_assignment(semantical_global, sdt_stack, symbol_table) :
+    if sdt_stack[1]["operandtype"]=="memory" :
+        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + sdt_stack[1]["operandowner"] + '\n')
+    if sdt_stack[1]["operandtype"]=="numeric" :
+        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + str(sdt_stack[1]["operand"]) + '\n')
+    if sdt_stack[1]["operandtype"]=="register" :
+        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + "CUR\n")
+    
+    return {}
+
+def __type_int(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["type"] = "int"
+    obj["size"] = 4
+    return obj
+
+def __declaration_type_ID_declarationd(semantical_global, sdt_stack, symbol_table) :
+    symbol_table.write("D " + sdt_stack[1]["lexval"] + ' ' + sdt_stack[0]["type"] + ' ' + str(semantical_global["memshift"]) + '\n')
+    if ("type" in sdt_stack[2]) :
+        symbol_table.write("S " + sdt_stack[1]["lexval"] + ' ' + "CUR\n")
+    semantical_global["memshift"] += sdt_stack[0]["size"]
+    return {}
+
+def __declarationd_assignment(semantical_global, sdt_stack, symbol_table) :
+    obj = {}
+    obj["type"] = "o"
+    return obj
+
+def __declarationd_semicolon(semantical_global, sdt_stack, symbol_table) :
+    return {}
+
 sdt_mapping = {
-    9: __operand_number, #<operand>::= number
+    8: __operand_ID, #<operand>::= 'ID'
+    9: __operand_number, #<operand>::= 'number'
+    10: __operand_minus_number, #<operand>::= '-' 'number'
+    13: __cmpexp_boolexp, #<cmpexp>::= <boolexp>
+    21: __boolexp_addexp, #<boolexp>::= <addexp>
+    22: __addexp_addexp1_addexpd, #<addexp>::= <addexp1> <addexp'>
+    23: __addexp_mulexp, #<addexp>::= <mulexp>
+    24: __addexpd_plus_mulexp, #<addexp'>::= '+' <mulexp>
+    25: __addexpd_minus_mulexp, #<addexp'>::= '-' <mulexp>
     26: __mulexp_mulexp1_mulexpd, #<mulexp>::= <mulexp1> <mulexp'>
     27: __mulexp_termexp, #<mulexp>::= <termexp>
     28: __mulexpd_mult_termexp, #<mulexp'>::= '*' <termexp>
-    30: __termexp_operand, #<termexp> ::= <operand>
+    29: __mulexpd_div_termexp, #<mulexp'>::= '/' <termexp>
+    30: __termexp_operand, #<termexp>::= <operand>
+    31: __termexp_p_expression_p, #<termexp>::= '(' <expression> ')'
+    32: __expression_cmpex, #<expression>::= <cmpexp>
+    33: __assignment_assign_expression_semicolon, #<assignment>::= '=' <expression> ';'
+    34: __attribute_ID_assignment, #<attribute>::= 'ID' <assignment>
+    35: __type_int, #<type> ::= int
+    37: __declaration_type_ID_declarationd, #<declaration> ::= <type> ID <declaration'>
+    38: __declarationd_assignment, #<declaration'> ::= <assignment>
+    39: __declarationd_semicolon, #<declaration'> ::= ';'
 }

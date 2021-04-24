@@ -20,7 +20,7 @@
 <cmpexp'>::= '>' <boolexp>
 <boolexp>::= '!' <addexp>
 <boolexp>::= <addexp> {<booleanexp>.operand = <addexp>.operand}
-<addexp>::= <addexp1> <addexp'> {addSymbol("O", <addexp'>.type, <addexp1>.operand, <addexp'>.operand)}
+<addexp>::= <addexp1> <addexp'> {addSymbol("O", <addexp'>.type, <addexp1>.operand, <addexp'>.operand); <addexp>.operand=CUR}
 <addexp>::= <mulexp> {<addexp>.operand=<mulexp>.operand}
 <addexp'>::= '+' <mulexp> {<addexp'>.type="+"; <addexp'>.operand=<mulexp>.operand}
 <addexp'>::= '-' <mulexp> {<addexp'>.type="-"; <addexp'>.operand=<mulexp>.operand}
@@ -32,10 +32,10 @@
 <termexp>::= '(' <expression> ')' {<termexp>.operand=<expression>.operand}
 <expression>::= <cmpexp> {if <cmpexp>.operand != CUR then addSymbol("O", "+", 0, <cmpexp>.operand); <expression>.operand=CUR}
 <assignment>::= '=' <expression> ';' {<assignment>.operand = <expression>.operand}
-<attribute>::= 'ID' <assignment> {addSymbol("S", <assignment>.operand)}
+<attribute>::= 'ID' <assignment> {addSymbol("S", ID.lexval.memshift, <assignment>.operand)}
 <type> ::= int {<type>.type = "int"; <type>.size = 4}
 <type> ::= char
-<declaration> ::= <type> ID <declaration'> {addSymbol("D", ID.lexval, memshift); memshift += <type>.size; if <declaration'>.type == "o" then addSymbol("S", memshift)}
+<declaration> ::= <type> ID <declaration'> {addSymbol("D", ID.lexval, <type>.type, memshift); memshift += <type>.size; if <declaration'>.type == "o" then addSymbol("S", memshift)}
 <declaration'> ::= <assignment> {<declaration'>.type = "o"}
 <declaration'> ::= ';'
 <while>::= 'while' '(' <expression> ')' '{' <block> '}'
