@@ -1,0 +1,49 @@
+<block>::= <operation> <block>
+<block>::= <operation>
+<operation>::= <attribute>
+<operation>::= <declaration>
+<operation>::= <if>
+<operation>::= <while>
+<operation>::= <jumppoint>
+<operation>::= <goto>
+<operand>::= 'ID' {<operand>.operand=ID.lexval.memshift}
+<operand>::= 'number' {<operand>.operand=number.lexval}
+<operand>::= '-' 'number' {<operand>.operand=-number.lexval}
+<operand>::= 'letter'
+<cmpexp>::= <boolexp> <cmpexp'>
+<cmpexp>::= <boolexp> {<cmpexp>.operand = <boolexp>.operand}
+<cmpexp'>::= '==' <boolexp>
+<cmpexp'>::= '!=' <boolexp>
+<cmpexp'>::= '<=' <boolexp>
+<cmpexp'>::= '>=' <boolexp>
+<cmpexp'>::= '<' <boolexp>
+<cmpexp'>::= '>' <boolexp>
+<boolexp>::= '!' <addexp>
+<boolexp>::= <addexp> {<booleanexp>.operand = <addexp>.operand}
+<addexp>::= <addexp1> <addexp'> {addSymbol("O", <addexp'>.type, <addexp1>.operand, <addexp'>.operand)}
+<addexp>::= <mulexp> {<addexp>.operand=<mulexp>.operand}
+<addexp'>::= '+' <mulexp> {<addexp'>.type="+"; <addexp'>.operand=<mulexp>.operand}
+<addexp'>::= '-' <mulexp> {<addexp'>.type="-"; <addexp'>.operand=<mulexp>.operand}
+<mulexp>::= <mulexp1> <mulexp'> {addSymbol("O", <mulexp'>.type, <mulexp1>.operand, <mulexp'>.operand); <mulexp>.operand=CUR}
+<mulexp>::= <termexp> {<mulexp>.operand=<termexp>.operand}
+<mulexp'>::= '*' <termexp> {<mulexp'>.type="*"; <mulexp'>.operand=<termexp>.operand}
+<mulexp'>::= '/' <termexp> {<mulexp'>.type="/"; <mulexp'>.operand=<termexp>.operand}
+<termexp>::= <operand> {<termexp>.operand=<operand>.operand}
+<termexp>::= '(' <expression> ')' {<termexp>.operand=<expression>.operand}
+<expression>::= <cmpexp> {if <cmpexp>.operand != CUR then addSymbol("O", "+", 0, <cmpexp>.operand); <expression>.operand=CUR}
+<assignment>::= '=' <expression> ';' {<assignment>.operand = <expression>.operand}
+<attribute>::= 'ID' <assignment> {addSymbol("S", <assignment>.operand)}
+<type> ::= int {<type>.type = "int"; <type>.size = 4}
+<type> ::= char
+<declaration> ::= <type> ID <declaration'> {addSymbol("D", ID.lexval, memshift); memshift += <type>.size; if <declaration'>.type == "o" then addSymbol("S", memshift)}
+<declaration'> ::= <assignment> {<declaration'>.type = "o"}
+<declaration'> ::= ';'
+<while>::= 'while' '(' <expression> ')' '{' <block> '}'
+<if>::= 'if' '(' <expression> ')' '{' <block> '}'
+<if>::= 'if' '(' <expression> ')' '{' <block> '}' 'else' <else>
+<else>::= <if>
+<else>::= '{' <block> '}'
+<jumppoint>::= 'ID' ':'
+<goto>::= 'goto' 'ID' ';'
+
+{memshift=0, lineshift=0}
