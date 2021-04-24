@@ -3,6 +3,8 @@ from sys import exit
 from collections import deque
 import linecache
 
+from sdt import sdt_mapping
+
 def read_grammar(file) :
     productions = []
     production_sizes = {}
@@ -46,15 +48,33 @@ def read_grammar(file) :
 
     return productions, production_sizes, actions, transitions
 
+def tailq_pop(tailq, count) :
+    for i in range(count) : tailq.pop(len(tailq)-1)
+
+def stack_pop(stack, count) :
+    for i in range(count) : stack.pop()
+    return stack_top(stack)
+
+def stack_top(stack) :
+    top = stack.pop()
+    stack.append(top)
+    return top
+
+def stack_push(stack, val) :
+    stack.append(val)
+    return val
+
 def syntactical(tape, productions, production_sizes, actions, transitions, debug) :
     try :
         tape_f = open(tape, "r")
 
+        sem_tailq = []
+        sem_global = {}
         stack = deque()
         stack.append(0)
 
         while (line:=tape_f.readline().split()) :
-            c_state = stack.pop(); stack.append(c_state)
+            c_state = stack_top(stack)
             if c_state not in actions or line[0] not in actions[c_state] :
                 if debug :
                     if c_state in actions:
@@ -65,9 +85,19 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
                 return False
             act = actions[c_state][line[0]]
             while act[0]=='r' :
+                #Syntax Directed Translation
+                cur_sdt_stack = sem_tailq[-production_sizes[act[1]]:]
+                print(act[1], cur_sdt_stack)
+                tailq_pop(sem_tailq, production_sizes[act[1]])
+
+                if act[1] in sdt_mapping :
+                    sem_tailq.append(sdt_mapping[act[1]](sem_global, cur_sdt_stack, None))
+                else :
+                    sem_tailq.append(act[1])
+
                 if debug : print("Reducing", production_sizes[act[1]], "elements of production", act[1], "from", line[0])
-                for i in range(production_sizes[act[1]]) : stack.pop() #reduce
-                c_state = stack.pop(); stack.append(c_state)
+
+                c_state = stack_pop(stack, production_sizes[act[1]]) #reduce
                 if debug : print("Transitioning from", c_state, "with", productions[act[1]])
                 if c_state not in transitions or productions[act[1]] not in transitions[c_state] :
                     if debug :
@@ -77,8 +107,7 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
                             print("Syntax error:", c_state, "has no transitions")
                     syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
                     return False
-                stack.append(transitions[c_state][productions[act[1]]])
-                c_state = stack.pop(); stack.append(c_state)
+                c_state = stack_push(stack, transitions[c_state][productions[act[1]]])
                 if c_state not in actions or line[0] not in actions[c_state] :
                     if debug :
                         if c_state in actions:
@@ -92,7 +121,8 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
             if act[0]=='a' :
                 return True #accept
             if debug : print("Shifting",act[1],"from",line[0])
-            stack.append(act[1]) #shift
+            sem_tailq.append({"lexval": line[3]})
+            stack_push(stack, act[1]) #shift
 
         if debug : print("Syntax error:", line[0], "isn't final!")
         syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
