@@ -2,7 +2,7 @@ def __operand_ID(semantical_global, sdt_stack, symbol_table) :
     obj = {}
     obj["operandtype"] = "memory"
     obj["operandowner"] = sdt_stack[0]["lexval"]
-    obj["operand"] = semantical_global["ids"][sdt_stack[0]["lexval"]].memshift
+    obj["operand"] = semantical_global["ids"][sdt_stack[0]["lexval"]]["memshift"]
     return obj
 
 def __operand_number(semantical_global, sdt_stack, symbol_table) :
@@ -42,14 +42,14 @@ def __addexp_addexp1_addexpd(semantical_global, sdt_stack, symbol_table) :
     if sdt_stack[0]["operandtype"]=="numeric" :
         symbol_table.write(str(sdt_stack[0]["operand"]) + ' ')
     if sdt_stack[0]["operandtype"]=="register" :
-        symbol_table.write("CUR ")
+        symbol_table.write("% ")
     
     if sdt_stack[1]["operandtype"]=="memory" :
         symbol_table.write(sdt_stack[1]["operandowner"] + '\n')
     if sdt_stack[1]["operandtype"]=="numeric" :
         symbol_table.write(str(sdt_stack[1]["operand"]) + '\n')
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("CUR\n")
+        symbol_table.write("%\n")
     
     obj["operandtype"] = "register"
     obj["operandowner"] = None
@@ -88,14 +88,14 @@ def __mulexp_mulexp1_mulexpd(semantical_global, sdt_stack, symbol_table) :
     if sdt_stack[0]["operandtype"]=="numeric" :
         symbol_table.write(str(sdt_stack[0]["operand"]) + ' ')
     if sdt_stack[0]["operandtype"]=="register" :
-        symbol_table.write("CUR ")
+        symbol_table.write("% ")
     
     if sdt_stack[1]["operandtype"]=="memory" :
         symbol_table.write(sdt_stack[1]["operandowner"] + '\n')
     if sdt_stack[1]["operandtype"]=="numeric" :
         symbol_table.write(str(sdt_stack[1]["operand"]) + '\n')
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("CUR\n")
+        symbol_table.write("%\n")
     
     obj["operandtype"] = "register"
     obj["operandowner"] = None
@@ -141,11 +141,13 @@ def __termexp_p_expression_p(semantical_global, sdt_stack, symbol_table) :
 
 def __expression_cmpex(semantical_global, sdt_stack, symbol_table) :
     obj = {}
-    if (sdt_stack[0]["operandtype"]!="register") : #perform an operation to get the operand on a register
-        if sdt_stack[0]["operandtype"]=="memory" :
-            symbol_table.write("O + " + sdt_stack[0]["operandowner"] + " 0\n")
-        if sdt_stack[0]["operandtype"]=="numeric" :
-            symbol_table.write("O + " + str(sdt_stack[0]["operand"]) + " 0\n")
+
+    if not(isinstance(sdt_stack[0], int)) : #not all expressions are implemented
+        if (sdt_stack[0]["operandtype"]!="register") : #perform an operation to get the operand on a register
+            if sdt_stack[0]["operandtype"]=="memory" :
+                symbol_table.write("O + " + sdt_stack[0]["operandowner"] + " 0\n")
+            if sdt_stack[0]["operandtype"]=="numeric" :
+                symbol_table.write("O + " + str(sdt_stack[0]["operand"]) + " 0\n")
     
     obj["operandtype"] = "register"
     obj["operandowner"] = None
@@ -165,7 +167,7 @@ def __attribute_ID_assignment(semantical_global, sdt_stack, symbol_table) :
     if sdt_stack[1]["operandtype"]=="numeric" :
         symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + str(sdt_stack[1]["operand"]) + '\n')
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + "CUR\n")
+        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + "%\n")
     
     return {}
 
@@ -177,8 +179,12 @@ def __type_int(semantical_global, sdt_stack, symbol_table) :
 
 def __declaration_type_ID_declarationd(semantical_global, sdt_stack, symbol_table) :
     symbol_table.write("D " + sdt_stack[1]["lexval"] + ' ' + sdt_stack[0]["type"] + ' ' + str(semantical_global["memshift"]) + '\n')
+    semantical_global["ids"][sdt_stack[1]["lexval"]] = {
+        "type": sdt_stack[0]["type"],
+        "memshift": semantical_global["memshift"]
+    }
     if ("type" in sdt_stack[2]) :
-        symbol_table.write("S " + sdt_stack[1]["lexval"] + ' ' + "CUR\n")
+        symbol_table.write("S " + sdt_stack[1]["lexval"] + ' ' + "%\n")
     semantical_global["memshift"] += sdt_stack[0]["size"]
     return {}
 

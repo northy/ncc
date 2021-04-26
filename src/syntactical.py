@@ -65,17 +65,49 @@ def stack_push(stack, val) :
     return val
 
 def syntactical(tape, productions, production_sizes, actions, transitions, debug) :
-    try :
-        tape_f = open(tape, "r")
+    tape_f = open(tape, "r")
 
-        sem_tailq = []
-        sem_global = {"memshift": 0, "ids": {}}
-        sdt_outfile = open("out.sdt", "w+")
-        stack = deque()
-        stack.append(0)
+    sem_tailq = []
+    sem_global = {"memshift": 0, "ids": {}}
+    sdt_outfile = open("out.sdt", "w+")
+    stack = deque()
+    stack.append(0)
 
-        while (line:=tape_f.readline().split()) :
-            c_state = stack_top(stack)
+    while (line:=tape_f.readline().split()) :
+        c_state = stack_top(stack)
+        if c_state not in actions or line[0] not in actions[c_state] :
+            if debug :
+                if c_state in actions:
+                    print("Syntax error:", c_state, "doesn't have an action from", line[0])
+                else :
+                    print("Syntax error:", c_state, "has no actions")
+            syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+            return False
+        act = actions[c_state][line[0]]
+        while act[0]=='r' :
+            #Syntax Directed Translation
+            cur_sdt_stack = sem_tailq[-production_sizes[act[1]]:]
+            if debug : print(act[1], cur_sdt_stack)
+            tailq_pop(sem_tailq, production_sizes[act[1]])
+
+            if act[1] in sdt_mapping :
+                sem_tailq.append(sdt_mapping[act[1]](sem_global, cur_sdt_stack, sdt_outfile))
+            else :
+                sem_tailq.append(act[1])
+
+            if debug : print("Reducing", production_sizes[act[1]], "elements of production", act[1], "from", line[0])
+
+            c_state = stack_pop(stack, production_sizes[act[1]]) #reduce
+            if debug : print("Transitioning from", c_state, "with", productions[act[1]])
+            if c_state not in transitions or productions[act[1]] not in transitions[c_state] :
+                if debug :
+                    if c_state in transitions:
+                        print("Syntax error:", c_state, "doesn't transition from", productions[act[1]])
+                    else :
+                        print("Syntax error:", c_state, "has no transitions")
+                syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+                return False
+            c_state = stack_push(stack, transitions[c_state][productions[act[1]]])
             if c_state not in actions or line[0] not in actions[c_state] :
                 if debug :
                     if c_state in actions:
@@ -85,56 +117,19 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
                 syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
                 return False
             act = actions[c_state][line[0]]
-            while act[0]=='r' :
-                #Syntax Directed Translation
-                cur_sdt_stack = sem_tailq[-production_sizes[act[1]]:]
-                print(act[1], cur_sdt_stack)
-                tailq_pop(sem_tailq, production_sizes[act[1]])
+            continue
+        if act[0]=='a' :
+            return True #accept
+        if debug : print("Shifting",act[1],"from",line[0])
+        sem_tailq.append({"lexval": line[3]})
+        stack_push(stack, act[1]) #shift
 
-                if act[1] in sdt_mapping :
-                    sem_tailq.append(sdt_mapping[act[1]](sem_global, cur_sdt_stack, sdt_outfile))
-                else :
-                    sem_tailq.append(act[1])
+    if debug : print("Syntax error:", line[0], "isn't final!")
+    syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+    return False
 
-                if debug : print("Reducing", production_sizes[act[1]], "elements of production", act[1], "from", line[0])
-
-                c_state = stack_pop(stack, production_sizes[act[1]]) #reduce
-                if debug : print("Transitioning from", c_state, "with", productions[act[1]])
-                if c_state not in transitions or productions[act[1]] not in transitions[c_state] :
-                    if debug :
-                        if c_state in transitions:
-                            print("Syntax error:", c_state, "doesn't transition from", productions[act[1]])
-                        else :
-                            print("Syntax error:", c_state, "has no transitions")
-                    syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
-                    return False
-                c_state = stack_push(stack, transitions[c_state][productions[act[1]]])
-                if c_state not in actions or line[0] not in actions[c_state] :
-                    if debug :
-                        if c_state in actions:
-                            print("Syntax error:", c_state, "doesn't have an action from", line[0])
-                        else :
-                            print("Syntax error:", c_state, "has no actions")
-                    syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
-                    return False
-                act = actions[c_state][line[0]]
-                continue
-            if act[0]=='a' :
-                return True #accept
-            if debug : print("Shifting",act[1],"from",line[0])
-            sem_tailq.append({"lexval": line[3]})
-            stack_push(stack, act[1]) #shift
-
-        if debug : print("Syntax error:", line[0], "isn't final!")
-        syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
-        return False
-
-        sdt_outfile.close()
-        tape_f.close()
-    except Exception as e :
-        print("Tape file error on line {}".format(sys.exc_info()[-1].tb_lineno))
-        print(e)
-        exit(1)
+    sdt_outfile.close()
+    tape_f.close()
 
 def syntactical_error(file, l, c) :
     line = linecache.getline(file, l+1).strip()
@@ -144,5 +139,5 @@ def syntactical_error(file, l, c) :
 
 if __name__=="__main__" :
     productions, production_sizes, actions, transitions = read_grammar(sys.argv[1])
-    if syntactical("out.lex", productions, production_sizes, actions, transitions, True) :
+    if syntactical("out.lex", productions, production_sizes, actions, transitions, False) :
         print("Recognized!")
