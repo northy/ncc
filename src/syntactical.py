@@ -68,8 +68,9 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
     tape_f = open(tape, "r")
 
     sem_tailq = []
-    sem_global = {"memshift": 0, "ids": {}}
+    sem_global = {"memshift": 0, "namegen_t": 0, "ids": {}}
     sdt_outfile = open("out.sdt", "w+")
+    ic_outfile = open("out.ic", "w+")
     stack = deque()
     stack.append(0)
 
@@ -91,7 +92,7 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
             tailq_pop(sem_tailq, production_sizes[act[1]])
 
             if act[1] in sdt_mapping :
-                sem_tailq.append(sdt_mapping[act[1]](sem_global, cur_sdt_stack, sdt_outfile))
+                sem_tailq.append(sdt_mapping[act[1]](sem_global, cur_sdt_stack, sdt_outfile, ic_outfile))
             else :
                 sem_tailq.append(act[1])
 
@@ -129,6 +130,7 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
     return False
 
     sdt_outfile.close()
+    ic_outfile.close()
     tape_f.close()
 
 def syntactical_error(file, l, c) :
