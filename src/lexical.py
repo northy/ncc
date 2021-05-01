@@ -87,6 +87,7 @@ def read(table, final, initial, file, debugMode) :
                         c_prod = table[initial][char]
                     except :
                         lexic_error(c_l,lines[c_l],c_c)
+                        success = False
                         write_tape(tape,c_l,i_c,c_prod,c_read+char)
                         c_prod = initial
                         i_c+=1
@@ -94,6 +95,7 @@ def read(table, final, initial, file, debugMode) :
                         continue
                 else :
                     lexic_error(c_l,lines[c_l],i_c)
+                    success = False
                     write_tape(tape,c_l,i_c,c_prod,c_read+char)
                     c_prod_old = errorstate
                     c_read = ''
@@ -124,6 +126,10 @@ def read(table, final, initial, file, debugMode) :
 
 def lexic_error(l, line, column) :
     print("Lexic error at line %d:"%(l+1))
+    while line[0]==' ' :
+        line = line[1::]
+        column-=1
+    line = line.strip()
     print(line)
     print(" "*column+'^')
 
