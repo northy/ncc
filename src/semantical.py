@@ -40,7 +40,7 @@ def semantical_error(file, l, c) :
         line = line[1::]
         c-=1
     line = line.strip()
-    print("At line %d:"%(l+1))
+    print("Near line %d:"%(l+1))
     print(line)
     print(" "*c+'^')
 
