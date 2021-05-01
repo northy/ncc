@@ -64,7 +64,7 @@ def stack_push(stack, val) :
     stack.append(val)
     return val
 
-def syntactical(tape, productions, production_sizes, actions, transitions, debug) :
+def syntactical_ops(tape, program, productions, production_sizes, actions, transitions, debug) :
     tape_f = open(tape, "r")
 
     sem_tailq = []
@@ -82,7 +82,7 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
                     print("Syntax error:", c_state, "doesn't have an action from", line[0])
                 else :
                     print("Syntax error:", c_state, "has no actions")
-            syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+            syntactical_error(program, int(line[1]), int(line[2]))
             return False
         act = actions[c_state][line[0]]
         while act[0]=='r' :
@@ -106,7 +106,7 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
                         print("Syntax error:", c_state, "doesn't transition from", productions[act[1]])
                     else :
                         print("Syntax error:", c_state, "has no transitions")
-                syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+                syntactical_error(program, int(line[1]), int(line[2]))
                 return False
             c_state = stack_push(stack, transitions[c_state][productions[act[1]]])
             if c_state not in actions or line[0] not in actions[c_state] :
@@ -115,18 +115,18 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
                         print("Syntax error:", c_state, "doesn't have an action from", line[0])
                     else :
                         print("Syntax error:", c_state, "has no actions")
-                syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+                syntactical_error(program, int(line[1]), int(line[2]))
                 return False
             act = actions[c_state][line[0]]
             continue
         if act[0]=='a' :
             return True #accept
         if debug : print("Shifting",act[1],"from",line[0])
-        sem_tailq.append({"lexval": line[3]})
+        sem_tailq.append({"lexval": line[3], "line": line[1], "column": line[2]})
         stack_push(stack, act[1]) #shift
 
     if debug : print("Syntax error:", line[0], "isn't final!")
-    syntactical_error(sys.argv[2], int(line[1]), int(line[2]))
+    syntactical_error(program, int(line[1]), int(line[2]))
     return False
 
     sdt_outfile.close()
@@ -134,12 +134,19 @@ def syntactical(tape, productions, production_sizes, actions, transitions, debug
     tape_f.close()
 
 def syntactical_error(file, l, c) :
-    line = linecache.getline(file, l+1).strip()
+    line = linecache.getline(file, l+1)
+    while line[0]==' ' :
+        line = line[1::]
+        c-=1
+    line = line.strip()
     print("Syntactical error at line %d:"%(l+1))
     print(line)
     print(" "*c+'^')
 
+def syntactical(grammar, program, debug) :
+    productions, production_sizes, actions, transitions = read_grammar(grammar)
+    return syntactical_ops("out.lex", program, productions, production_sizes, actions, transitions, debug)
+
 if __name__=="__main__" :
-    productions, production_sizes, actions, transitions = read_grammar(sys.argv[1])
-    if syntactical("out.lex", productions, production_sizes, actions, transitions, False) :
+    if syntactical(sys.argv[1], sys.argv[2], True) :
         print("Recognized!")

@@ -42,19 +42,31 @@ def read(table, final, initial, file, debugMode) :
 
     lexemes = []
     for i in range(len(lines)) :
-        lexemes+=map(lambda x : (x,i), lines[i].split())
+        reading = ''
+        jinit = -1
+        for j in range(len(lines[i])) :
+            if lines[i][j] == ' ' :
+                if jinit == -1 : continue
+                lexemes.append((reading, i, jinit))
+                reading = ''
+                jinit=-1
+                continue
+            if jinit == -1 : jinit = j
+            reading+=lines[i][j]
+        if jinit == -1 : continue
+        lexemes.append((reading, i, jinit))
     
     #line col token value
     tape = open("out.lex", "w+")
 
     success = True
     c_l = -1
-    for (lexeme,l) in lexemes :
+    for (lexeme,l,c) in lexemes :
         c_prod_old = errorstate
         c_prod = initial
         if (c_l!=l) :
-            i_c = 0
-            c_c = 0
+            i_c = c
+            c_c = c
             c_l = l
         c_read = ''
         for char in lexeme :
@@ -103,8 +115,7 @@ def read(table, final, initial, file, debugMode) :
             lexic_error(c_l,lines[c_l],i_c)
             write_tape(tape,c_l,i_c,errorstate,c_read)
             success = False
-        i_c=c_c+1
-        c_c+=1
+        c_l = -1
     
     write_tape(tape, len(lines), 0, '$', '$')
     
@@ -119,9 +130,10 @@ def lexic_error(l, line, column) :
 def write_tape(tape, line, col, token, value) :
     tape.write(str(token)+' '+str(line)+' '+str(col)+' '+str(value)+'\n')
 
-def lexic(dfa, input, debugMode=False) :
+def lexical(dfa, input, debugMode=False) :
     table, final, initial = construct(dfa, debugMode)
-    read(table, final, initial, input, debugMode)
+    return read(table, final, initial, input, debugMode)
 
 if __name__=="__main__" :
-    lexic(sys.argv[1], sys.argv[2], True)
+    if lexical(sys.argv[1], sys.argv[2], True) :
+        print("Recognized!")
