@@ -65,7 +65,7 @@ def __addexp_addexp1_addexpd(semantical_global, sdt_stack, symbol_table, interme
     
     if sdt_stack[1]["operandtype"]=="memory" :
         symbol_table.write(sdt_stack[1]["operandowner"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
-        intermediate_code.write(sdt_stack[1]["operandowner"] + "\n")
+        intermediate_code.write('$' + sdt_stack[1]["operandowner"] + "\n")
     if sdt_stack[1]["operandtype"]=="numeric" :
         symbol_table.write(str(sdt_stack[1]["operand"]) + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
         intermediate_code.write(str(sdt_stack[1]["operand"]) + "\n")
@@ -127,7 +127,7 @@ def __mulexp_mulexp1_mulexpd(semantical_global, sdt_stack, symbol_table, interme
     
     if sdt_stack[1]["operandtype"]=="memory" :
         symbol_table.write(sdt_stack[1]["operandowner"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
-        intermediate_code.write(sdt_stack[1]["operandowner"] + "\n")
+        intermediate_code.write('$' + sdt_stack[1]["operandowner"] + "\n")
     if sdt_stack[1]["operandtype"]=="numeric" :
         symbol_table.write(str(sdt_stack[1]["operand"]) + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
         intermediate_code.write(str(sdt_stack[1]["operand"]) + "\n")
