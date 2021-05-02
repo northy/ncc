@@ -139,7 +139,7 @@ def syntactical_error(file, l, c) :
         line = line[1::]
         c-=1
     line = line.strip()
-    print("Syntactical error at line %d:"%(l+1))
+    print("Syntactical error near line %d:"%(l+1))
     print(line)
     print(" "*c+'^')
 
