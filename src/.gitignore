@@ -1,6 +1,8 @@
 out.lex
 out.sdt
 out.ic
+out.oic
+dag.dot
 program.txt
 syntax.txt
 __pycache__/

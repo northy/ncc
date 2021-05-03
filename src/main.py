@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys, os
-import lexical, syntactical, semantical
+import lexical, syntactical, semantical, optimizer
 
 lexical_grammar = "lexical.grammar.csv"
 syntax_grammar = "syntax.grammar.txt"
@@ -20,20 +20,27 @@ if __name__=="__main__" :
         print("Lexical error(s), leaving...")
         os.remove("out.lex")
         sys.exit(1)
+        
     if not(syntactical.syntactical(syntax_grammar, program, debug)) :
         print("Syntactical error(s), leaving...")
         os.remove("out.lex")
         os.remove("out.sdt")
         os.remove("out.ic")
         sys.exit(1)
+
     if not(semantical.semantical("out.sdt", program, debug)) :
         print("Syntactical error(s), leaving...")
         os.remove("out.lex")
         os.remove("out.sdt")
         os.remove("out.ic")
         sys.exit(1)
-    os.remove("out.lex")
-    os.remove("out.sdt")
+
+    optimizer.optimize("out.ic", debug)
+
+    if not(debug) :
+        os.remove("out.lex")
+        os.remove("out.sdt")
+        os.remove("out.ic")
 
     print("Ok")
 
