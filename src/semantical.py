@@ -18,9 +18,9 @@ compatible = {
     }
 }
 
-def get_type(symbol, variables, cur, program, l, c) :
-    if symbol == "%" :
-        return cur
+def get_type(symbol, variables, regs, program, l, c) :
+    if symbol.startswith("%") :
+        return regs[symbol]
 
     try :
         int(symbol)
@@ -46,23 +46,23 @@ def semantical_error(file, l, c) :
 
 def semantical(file, program, debug=False) :
     variables = {}
-    cur = None
+    regs = {}
 
     symbolt_f = open(file, "r")
 
     while (line:=symbolt_f.readline()) :
         line = line.split()
         if line[0]=="O" :
-            typea = get_type(line[2], variables, cur, program, line[4], line[5])
-            typeb = get_type(line[3], variables, cur, program, line[4], line[5])
+            typea = get_type(line[3], variables, regs, program, line[5], line[6])
+            typeb = get_type(line[4], variables, regs, program, line[5], line[6])
 
             if not(typea) or not(typeb) : return False
 
             if line[1] not in operations_supported[typea][typeb] :
-                print(f"Semantical error: Can't use operation {line[1]} between {line[2]} ({typea}) and {line[3]} ({typeb})")
-                semantical_error(program, int(line[4]), int(line[5]))
+                print(f"Semantical error: Can't use operation {line[1]} between {line[3]} ({typea}) and {line[4]} ({typeb})")
+                semantical_error(program, int(line[5]), int(line[6]))
                 return False
-            cur = operations_supported[typea][typeb][line[1]]
+            regs[line[2]] = operations_supported[typea][typeb][line[1]]
 
         elif line[0]=="D" :
             variables[line[1]] = {
@@ -70,8 +70,8 @@ def semantical(file, program, debug=False) :
             }
 
         elif line[0]=="S" :
-            typea = get_type(line[1], variables, cur, program, line[3], line[4])
-            typeb = get_type(line[2], variables, cur, program, line[3], line[4])
+            typea = get_type(line[1], variables, regs, program, line[3], line[4])
+            typeb = get_type(line[2], variables, regs, program, line[3], line[4])
 
             if typeb not in compatible[typea] :
                 print(f"Semantical error: Can't store {line[2]} ({typeb}) in {line[1]} ({typea})")

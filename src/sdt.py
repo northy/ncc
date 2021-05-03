@@ -49,9 +49,10 @@ def __boolexp_addexp(semantical_global, sdt_stack, symbol_table, intermediate_co
 
 def __addexp_addexp1_addexpd(semantical_global, sdt_stack, symbol_table, intermediate_code) :
     obj = {}
-    symbol_table.write("O " + sdt_stack[1]["type"] + ' ')
 
     name_t = generate_name(semantical_global)
+
+    symbol_table.write("O " + sdt_stack[1]["type"] + ' ' + name_t + ' ')
 
     if sdt_stack[0]["operandtype"]=="memory" :
         symbol_table.write(sdt_stack[0]["operandowner"] + ' ')
@@ -60,7 +61,7 @@ def __addexp_addexp1_addexpd(semantical_global, sdt_stack, symbol_table, interme
         symbol_table.write(str(sdt_stack[0]["operand"]) + ' ')
         intermediate_code.write(name_t + " = " + str(sdt_stack[0]["operand"]) + ' ' + sdt_stack[1]["type"] + " ")
     if sdt_stack[0]["operandtype"]=="register" :
-        symbol_table.write("% ")
+        symbol_table.write(sdt_stack[0]["operand"] + ' ')
         intermediate_code.write(name_t + " = " + sdt_stack[0]["operand"] + ' ' + sdt_stack[1]["type"] + " ")
     
     if sdt_stack[1]["operandtype"]=="memory" :
@@ -70,7 +71,7 @@ def __addexp_addexp1_addexpd(semantical_global, sdt_stack, symbol_table, interme
         symbol_table.write(str(sdt_stack[1]["operand"]) + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
         intermediate_code.write(str(sdt_stack[1]["operand"]) + "\n")
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("%" + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
+        symbol_table.write(sdt_stack[1]["operand"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
         intermediate_code.write(sdt_stack[1]["operand"] + "\n")
     
     obj["operandtype"] = "register"
@@ -111,9 +112,10 @@ def __addexpd_minus_mulexp(semantical_global, sdt_stack, symbol_table, intermedi
 
 def __mulexp_mulexp1_mulexpd(semantical_global, sdt_stack, symbol_table, intermediate_code) :
     obj = {}
-    symbol_table.write("O " + sdt_stack[1]["type"] + ' ')
 
     name_t = generate_name(semantical_global)
+
+    symbol_table.write("O " + sdt_stack[1]["type"] + ' ' + name_t + ' ')
 
     if sdt_stack[0]["operandtype"]=="memory" :
         symbol_table.write(sdt_stack[0]["operandowner"] + ' ')
@@ -122,7 +124,7 @@ def __mulexp_mulexp1_mulexpd(semantical_global, sdt_stack, symbol_table, interme
         symbol_table.write(str(sdt_stack[0]["operand"]) + ' ')
         intermediate_code.write(name_t + " = " + str(sdt_stack[0]["operand"]) + ' ' + sdt_stack[1]["type"] + " ")
     if sdt_stack[0]["operandtype"]=="register" :
-        symbol_table.write("% ")
+        symbol_table.write(sdt_stack[0]["operand"] + ' ')
         intermediate_code.write(name_t + " = " + sdt_stack[0]["operand"] + ' ' + sdt_stack[1]["type"] + " ")
     
     if sdt_stack[1]["operandtype"]=="memory" :
@@ -132,7 +134,7 @@ def __mulexp_mulexp1_mulexpd(semantical_global, sdt_stack, symbol_table, interme
         symbol_table.write(str(sdt_stack[1]["operand"]) + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
         intermediate_code.write(str(sdt_stack[1]["operand"]) + "\n")
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("%" + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
+        symbol_table.write(sdt_stack[1]["operand"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
         intermediate_code.write(sdt_stack[1]["operand"] + "\n")
     
     obj["operandtype"] = "register"
@@ -202,10 +204,10 @@ def __expression_cmpex(semantical_global, sdt_stack, symbol_table, intermediate_
             obj["line"] = sdt_stack[0]["line"]
             obj["column"] = sdt_stack[0]["column"]
             if sdt_stack[0]["operandtype"]=="memory" :
-                symbol_table.write("O + " + sdt_stack[0]["operandowner"] + " 0 " + sdt_stack[0]["line"] + ' ' + sdt_stack[0]["column"] + "\n")
+                symbol_table.write("O + " + name_t + ' ' + sdt_stack[0]["operandowner"] + " 0 " + sdt_stack[0]["line"] + ' ' + sdt_stack[0]["column"] + "\n")
                 intermediate_code.write(name_t + " = $" + sdt_stack[0]["operandowner"] + "\n")
             if sdt_stack[0]["operandtype"]=="numeric" :
-                symbol_table.write("O + " + str(sdt_stack[0]["operand"]) + " 0 " + sdt_stack[0]["line"] + ' ' + sdt_stack[0]["column"] + "\n")
+                symbol_table.write("O + " + name_t + ' ' + str(sdt_stack[0]["operand"]) + " 0 " + sdt_stack[0]["line"] + ' ' + sdt_stack[0]["column"] + "\n")
                 intermediate_code.write(name_t + " = " + str(sdt_stack[0]["operand"]) + "\n")
         else :
             name_t = sdt_stack[0]["operand"]
@@ -232,7 +234,7 @@ def __attribute_ID_assignment(semantical_global, sdt_stack, symbol_table, interm
         symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + str(sdt_stack[1]["operand"]) + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
         intermediate_code.write('$' + sdt_stack[0]["lexval"] + " = " + str(sdt_stack[1]["operand"]) + '\n')
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' % ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
+        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + sdt_stack[2]["operand"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
         intermediate_code.write('$' + sdt_stack[0]["lexval"] + " = " + sdt_stack[1]["operand"] + '\n')
     
     return {}
@@ -257,7 +259,7 @@ def __declaration_type_ID_declarationd(semantical_global, sdt_stack, symbol_tabl
             symbol_table.write("S " + sdt_stack[1]["lexval"] + ' ' + str(sdt_stack[2]["operand"]) + ' ' + sdt_stack[2]["line"] + ' ' + sdt_stack[2]["column"] + '\n')
             intermediate_code.write('$' + sdt_stack[1]["lexval"] + " = " + str(sdt_stack[2]["operand"]) + '\n')
         if sdt_stack[2]["operandtype"]=="register" :
-            symbol_table.write("S " + sdt_stack[1]["lexval"] + ' % ' + sdt_stack[2]["line"] + ' ' + sdt_stack[2]["column"] + "\n")
+            symbol_table.write("S " + sdt_stack[1]["lexval"] + ' ' + sdt_stack[2]["operand"] + ' ' + sdt_stack[2]["line"] + ' ' + sdt_stack[2]["column"] + "\n")
             intermediate_code.write('$' + sdt_stack[1]["lexval"] + " = " + sdt_stack[2]["operand"] + '\n')
 
     semantical_global["memshift"] += sdt_stack[0]["size"]
