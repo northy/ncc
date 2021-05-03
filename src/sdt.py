@@ -234,7 +234,7 @@ def __attribute_ID_assignment(semantical_global, sdt_stack, symbol_table, interm
         symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + str(sdt_stack[1]["operand"]) + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + '\n')
         intermediate_code.write('$' + sdt_stack[0]["lexval"] + " = " + str(sdt_stack[1]["operand"]) + '\n')
     if sdt_stack[1]["operandtype"]=="register" :
-        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + sdt_stack[2]["operand"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
+        symbol_table.write("S " + sdt_stack[0]["lexval"] + ' ' + sdt_stack[1]["operand"] + ' ' + sdt_stack[1]["line"] + ' ' + sdt_stack[1]["column"] + "\n")
         intermediate_code.write('$' + sdt_stack[0]["lexval"] + " = " + sdt_stack[1]["operand"] + '\n')
     
     return {}
