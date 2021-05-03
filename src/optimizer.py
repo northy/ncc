@@ -23,8 +23,21 @@ def construct_op(op, rd, rs1, rs2) :
     }
 
 def construct_assign(rd, rs) :
-    dag[rd] = dag[rs]
-    dag[rd]["name"].append(rd)
+    if rd.startswith('$') :
+        dag[rd] = dag[rs]
+        dag[rd]["name"].append(rd)
+    else : #starts with %
+        construct_leaf(rs)
+        construct_leaf('0')
+        dag[rs]["in_degree"] += 1
+        dag['0']["in_degree"] += 1
+        dag[rd] = {
+            "op" : '+',
+            "in_degree": 0,
+            "left": rs,
+            "right": '0',
+            "name": [rd]
+        }
 
 def gv_name(item) :
     return '"\\'+", \\".join(dag[item]["name"])+("\\n"+dag[item]["op"] if "op" in dag[item] else "")+'"'
