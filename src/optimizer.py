@@ -3,22 +3,23 @@ import sys
 dag = {}
 
 def construct_leaf(leaf) :
-    if leaf not in dag :
-        if leaf.startswith('$') : #uninitialized but used
-            construct_leaf('0')
-            dag[leaf] = {
-                "op" : '+',
-                "in_degree": 0,
-                "left": '0',
-                "right": '0',
-                "name": [leaf]
-            }
-            return
-
+    if leaf  in dag :
+        return
+    if leaf.startswith('$') : #uninitialized but used
+        construct_leaf('0')
         dag[leaf] = {
-            "name": [leaf],
-            "in_degree": 0
+            "op" : '+',
+            "in_degree": 0,
+            "left": '0',
+            "right": '0',
+            "name": [leaf]
         }
+        return
+
+    dag[leaf] = {
+        "name": [leaf],
+        "in_degree": 0
+    }
 
 def construct_op(op, rd, rs1, rs2) :
     construct_leaf(rs1)
@@ -47,7 +48,7 @@ def construct_assign(rd, rs) :
         dag[rd] = {
             "op" : '+',
             "in_degree": 0,
-            "left": rs,
+            "left": dag[rs]['name'][0],
             "right": '0',
             "name": [rd]
         }

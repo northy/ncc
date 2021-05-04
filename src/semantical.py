@@ -85,7 +85,9 @@ def semantical(file, program, debug=False) :
                 variables[line[1]]["init"] = True
             if not(initb) :
                 variables[line[2]]["init"] = True
-                
+            
+            if not (typea) or not(typeb) :
+                return False
 
             if typeb not in compatible[typea] :
                 print(f"Semantical error: Can't store {line[2]} ({typeb}) in {line[1]} ({typea})")
