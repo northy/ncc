@@ -135,9 +135,12 @@ def syntactical_ops(tape, program, productions, production_sizes, actions, trans
 
 def syntactical_error(file, l, c) :
     line = linecache.getline(file, l+1)
-    while line[0]==' ' :
+    while len(line)>0 and line[0]==' ' :
         line = line[1::]
         c-=1
+    if len(line)==0 :
+        print("Syntactical error near the end of line %d (maybe missing ';'?)"%(l))
+        return
     line = line.strip()
     print("Syntactical error near line %d:"%(l+1))
     print(line)
