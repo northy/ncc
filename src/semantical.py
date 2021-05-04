@@ -72,6 +72,10 @@ def semantical(file, program, debug=False) :
             regs[line[2]] = operations_supported[typea][typeb][line[1]]
 
         elif line[0]=="D" :
+            if line[1] in variables :
+                print(f"Semantical error: Redeclaring {line[1]} ({get_type(line[1], variables, regs, program, None, None)[0]}) as {line[2]}")
+                semantical_error(program, int(line[4]), int(line[5]))
+                return False
             variables[line[1]] = {
                 "type": line[2],
                 "init": False

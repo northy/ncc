@@ -246,7 +246,7 @@ def __type_int(semantical_global, sdt_stack, symbol_table, intermediate_code) :
     return obj
 
 def __declaration_type_ID_declarationd(semantical_global, sdt_stack, symbol_table, intermediate_code) :
-    symbol_table.write("D " + sdt_stack[1]["lexval"] + ' ' + sdt_stack[0]["type"] + ' ' + str(semantical_global["memshift"]) + '\n')
+    symbol_table.write("D " + sdt_stack[1]["lexval"] + ' ' + sdt_stack[0]["type"] + ' ' + str(semantical_global["memshift"]) + ' ' + sdt_stack[1]['line'] + ' ' + sdt_stack[1]['column'] + ' ' + '\n')
     semantical_global["ids"][sdt_stack[1]["lexval"]] = {
         "type": sdt_stack[0]["type"],
         "memshift": semantical_global["memshift"]
