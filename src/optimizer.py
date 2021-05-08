@@ -3,7 +3,7 @@ import sys
 dag = {}
 
 def construct_leaf(leaf) :
-    if leaf  in dag :
+    if leaf in dag :
         return
     if leaf.startswith('$') : #uninitialized but used
         construct_leaf('0')
@@ -74,7 +74,7 @@ def op_order() :
     queue = []
 
     for k,v in dag.items() :
-        if not(v["in_degree"]) and "order_visited" not in v: queue.append(k)
+        if v["in_degree"]==0 and "order_visited" not in v: queue.append(k)
         while len(queue)>0 :
             i = queue.pop(0)
             if "op" not in dag[i] or "order_visited" in dag[i] : continue
@@ -82,11 +82,11 @@ def op_order() :
             dag[i]["order_visited"] = True
             L.append(dag[i]['name'][0])
 
-            dag[dag[i]["left"]]["in_degree"] -= 1
-            if not(dag[dag[i]["left"]]["in_degree"]) : queue.append(dag[i]["left"])
-
             dag[dag[i]["right"]]["in_degree"] -= 1
-            if not(dag[dag[i]["right"]]["in_degree"]) : queue.append(dag[i]["right"])
+            if dag[dag[i]["right"]]["in_degree"]==0 : queue.insert(0,dag[i]["right"])
+
+            dag[dag[i]["left"]]["in_degree"] -= 1
+            if dag[dag[i]["left"]]["in_degree"]==0 : queue.insert(0,dag[i]["left"])
 
     L.reverse()
     return L
