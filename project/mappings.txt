@@ -67,6 +67,9 @@ goto
 if ([rsa])
 [<0A><if2>] $1
 
+else ([rsa])
+[<0A><else4>] $1
+
 goto ([rsa])
 [<0A><goto4>] $1
 
