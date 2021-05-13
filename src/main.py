@@ -32,7 +32,7 @@ def main(program, debug=0) :
         sys.exit(1)
 
     if not(semantical.semantical("out.sdt", program, semantical_debug)) :
-        print("Syntactical error(s), leaving...")
+        print("Semantical error(s), leaving...")
         os.remove("out.lex")
         os.remove("out.sdt")
         os.remove("out.ic")
